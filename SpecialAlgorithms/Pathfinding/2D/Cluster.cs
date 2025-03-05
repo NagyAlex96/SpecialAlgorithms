@@ -1,6 +1,4 @@
-﻿using Unity.Mathematics;
-
-namespace SpecialAlgorithms.Pathfinding._2D
+﻿namespace SpecialAlgorithms.Pathfinding._2D
 {
     public struct Cluster
     {

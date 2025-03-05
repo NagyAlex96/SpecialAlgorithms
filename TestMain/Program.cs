@@ -1,43 +1,37 @@
-﻿using SpecialAlgorithms;
-using SpecialAlgorithms.BinaryTree;
-using SpecialAlgorithms.LinkedList;
-using System.Runtime;
+﻿using SpecialAlgorithms.Pathfinding._2D;
 
 namespace TestMain
 {
     public class Program
     {
-        static Random rnd = new Random();
-        const int size = 250000000;
-        const int TestNum = 3;
         static void Main(string[] args)
         {
-            LinkedListNormal<int> lancolt = new LinkedListNormal<int>();
+
+            const int xSize = 1, ySize = 3, totalSize = 1002;
+            Cluster cluster;
+            bool ok = false;
+            DateTime dNow = DateTime.Now;
+            for (int i = 0; i < totalSize; i++)
+            {
+                GridMap gridMap = new GridMap(xSize+i, ySize);
+
+                for (int y = 0; y < gridMap.YLength; y++)
+                {
+                    for (int x = 0; x < gridMap.XLength; x++)
+                    {
+                        gridMap.SetGridCoordinate(x, y, true);
+                    }
+                }
+                 cluster = new Cluster(gridMap);
+
+                ok = cluster.AllTrue();
+            }
 
 
-            Console.WriteLine("\nLefutott");
+            Console.WriteLine((DateTime.Now - dNow).Seconds);
+            Console.WriteLine("Lefutott");
             Console.ReadKey();
         }
 
-        static void AtlagKereses()
-        {
-            LinkedListNormal<int> lancoltLista = new LinkedListNormal<int>();
-
-            for (int i = 0; i < size; i++)
-            {
-                lancoltLista.InsertAfterTheLastElement(rnd.Next(int.MinValue, int.MaxValue));
-            }
-            Console.WriteLine("Adatok betöltése kész");
-
-            List<double> time = new List<double>();
-            for (int i = 0; i < TestNum; i++)
-            {
-                DateTime dTime = DateTime.Now;
-                var a = lancoltLista.LinearSearch(rnd.Next(int.MinValue, int.MaxValue));
-                time.Add((DateTime.Now - dTime).TotalSeconds);
-            }
-
-            Console.WriteLine($"{TestNum} lefutás után az átlag, ami kereséssel telt: {time.Average()}\nLegkevesebb idő: {time.Min()}\nLegtöbb idő: {time.Max()}");
-        }
     }
 }
