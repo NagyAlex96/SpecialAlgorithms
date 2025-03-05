@@ -1,6 +1,4 @@
-﻿using SpecialAlgorithms.Pathfinding._2D.Interfaces;
-using System.ComponentModel.Design;
-using System.Security.Principal;
+﻿using Unity.Mathematics;
 
 namespace SpecialAlgorithms.Pathfinding._2D
 {
@@ -11,7 +9,7 @@ namespace SpecialAlgorithms.Pathfinding._2D
 
         public Cluster(in GridMap gridMap)
         {
-            this._gridClusters = new GridMap[SetArrayYSize(gridMap.YLength), SetArrayXSize(gridMap.XLength)];
+            this._gridClusters = new GridMap[SetArraySize(gridMap.YLength), SetArraySize(gridMap.XLength)];
             DivideGridMapToClusters(gridMap);
         }
 
@@ -20,7 +18,7 @@ namespace SpecialAlgorithms.Pathfinding._2D
             int yCoordinate = 0, xCoordinate = 0;
             int clusterXPos = 0, clusterYPos = 0;
             int gridCoordinateX = 0, gridCoordinateY = 0;
-            GridMap clusterGrid = new GridMap(SetClusterXSize(xCoordinate, gridMap.XLength), SetClusterYSize(yCoordinate, gridMap.YLength));
+            GridMap clusterGrid = new GridMap(SetClusterSize(xCoordinate, gridMap.XLength), SetClusterSize(yCoordinate, gridMap.YLength));
 
             while (gridCoordinateY < gridMap.YLength && gridCoordinateX < gridMap.XLength) //15x3
             {
@@ -28,7 +26,7 @@ namespace SpecialAlgorithms.Pathfinding._2D
                 {
                     clusterGrid.SetGridCoordinate(xCoordinate, yCoordinate, gridMap.GetGridCoordinate(gridCoordinateX + xCoordinate, gridCoordinateY + yCoordinate));
                     xCoordinate++;
-                } while (gridCoordinateX + xCoordinate < gridMap.XLength && xCoordinate % CLUSTER_SIZE != 0);
+                } while (gridCoordinateX + xCoordinate < gridMap.XLength && xCoordinate % clusterGrid.XLength != 0);
                 yCoordinate++;
 
                 if (xCoordinate % clusterGrid.XLength == 0 && yCoordinate % clusterGrid.YLength != 0)
@@ -41,10 +39,10 @@ namespace SpecialAlgorithms.Pathfinding._2D
 
                     yCoordinate = 0;
                     xCoordinate = 0;
-                    gridCoordinateX = clusterXPos * CLUSTER_SIZE + xCoordinate;
+                    gridCoordinateX += xCoordinate + clusterGrid.XLength;
                     if (gridCoordinateX < gridMap.XLength)
                     {
-                        clusterGrid = new GridMap(SetClusterXSize(gridCoordinateX, gridMap.XLength), SetClusterYSize(gridCoordinateY, gridMap.YLength));
+                        clusterGrid = new GridMap(SetClusterSize(gridCoordinateX, gridMap.XLength), SetClusterSize(gridCoordinateY, gridMap.YLength));
                     }
                 }
             }
@@ -56,57 +54,24 @@ namespace SpecialAlgorithms.Pathfinding._2D
             this._gridClusters[yPos, xPos] = clusterGrid;
         }
 
-        private int SetArrayXSize(in int xSize)
+        private int SetArraySize(in int Size)
         {
-            int divX = xSize / CLUSTER_SIZE;
-            int modX = xSize % CLUSTER_SIZE;
+            int divX = Size / CLUSTER_SIZE;
+            int modX = Size % CLUSTER_SIZE;
 
-            return divX + (xSize >= CLUSTER_SIZE && modX % CLUSTER_SIZE <= CLUSTER_SIZE / 2 ? 0 : 1);
+            return divX + (Size >= CLUSTER_SIZE && modX % CLUSTER_SIZE <= CLUSTER_SIZE / 2 ? 0 : 1);
         }
 
-        private int SetArrayYSize(in int ySize)
+        private int SetClusterSize(in int fromCoordinate, in int toCoordinate)
         {
-            int divY = ySize / CLUSTER_SIZE;
-            int modY = ySize % CLUSTER_SIZE;
-
-            return divY + (ySize >= CLUSTER_SIZE && modY % CLUSTER_SIZE <= CLUSTER_SIZE / 2 ? 0 : 1);
-        }
-
-        private int SetClusterXSize(in int fromX, in int toX)
-        {
-            int xSize = toX - fromX;
+            int xSize = toCoordinate - fromCoordinate;
             if (xSize % CLUSTER_SIZE == 0)
             {
                 return CLUSTER_SIZE;
             }
-            else if (xSize > CLUSTER_SIZE && xSize % CLUSTER_SIZE <= CLUSTER_SIZE / 2)
-            {
-                return CLUSTER_SIZE + CLUSTER_SIZE / 2;
-            }
-            else if (xSize < CLUSTER_SIZE)
+            else if (xSize < CLUSTER_SIZE || (xSize > CLUSTER_SIZE && xSize <= CLUSTER_SIZE + CLUSTER_SIZE / 2))
             {
                 return xSize;
-            }
-            else
-            {
-                return CLUSTER_SIZE;
-            }
-        }
-
-        private int SetClusterYSize(in int fromY, in int toY)
-        {
-            int ySize = toY - fromY;
-            if (ySize % CLUSTER_SIZE == 0)
-            {
-                return CLUSTER_SIZE;
-            }
-            else if (ySize > CLUSTER_SIZE && ySize % CLUSTER_SIZE <= CLUSTER_SIZE / 2)
-            {
-                return CLUSTER_SIZE + CLUSTER_SIZE / 2;
-            }
-            else if (ySize < CLUSTER_SIZE)
-            {
-                return ySize;
             }
             else
             {

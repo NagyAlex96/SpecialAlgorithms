@@ -7,4 +7,17 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<ItemGroup>
+		<Reference Include="Unity.Mathematics">
+			<HintPath>Libs\Unity.Mathematics.dll</HintPath>
+			<Private>true</Private>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Update="Libs\Unity.Mathematics.dll">
+			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
+
 </Project>
