@@ -7,13 +7,15 @@ namespace TestMain
         static void Main(string[] args)
         {
 
-            const int xSize = 1, ySize = 3, totalSize = 1002;
+            const int xSize = 3, ySize = 13, totalSize = 16;
             Cluster cluster;
             bool ok = false;
             DateTime dNow = DateTime.Now;
+            
+            
             for (int i = 0; i < totalSize; i++)
             {
-                GridMap gridMap = new GridMap(xSize+i, ySize);
+                GridMap gridMap = new GridMap(xSize, ySize+i);
 
                 for (int y = 0; y < gridMap.YLength; y++)
                 {
