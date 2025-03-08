@@ -5,7 +5,7 @@ namespace SpecialAlgorithms.Pathfinding._2D
 {
     public struct Cluster
     {
-    {
+    
         const int CLUSTER_SIZE = 8;
         private GridMap[,] _gridClusters;
 
