@@ -1,14 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace SpecialAlgorithms.Assets
+﻿namespace SpecialAlgorithms.Assets
 {
     public partial class Algorithms
     {
-        private static IEnumerable<T> CreateInstance<T>() => Enumerable.Empty<T>();
+        private static IEnumerable<T> CreateEnumerableInstance<T>() => Enumerable.Empty<T>();
 
         private static void BackTrackSearchHelper<T>(IEnumerable<IEnumerable<T>> inputCollection, ref IEnumerable<T> outPutValues, ref bool hasResult, int level = 0) where T : IComparable<T>
         {
@@ -87,7 +81,7 @@ namespace SpecialAlgorithms.Assets
             }
 
             int counter = 0;
-            IEnumerable<T> returnedCollection = CreateInstance<T>();
+            IEnumerable<T> returnedCollection = CreateEnumerableInstance<T>();
 
             foreach (var item in inputCollection)
             {
