@@ -10,12 +10,13 @@ namespace SpecialAlgorithms.LinkedList
     public unsafe struct LinkedListNormal<TContent> : IDisposable
         where TContent : unmanaged, IComparable<TContent>
     {
+        //TODO: exceptions
+
         private int _count = 0;
         public int Count => this._count;
 
         private LinkedListItem* _head;
         private LinkedListItem* _tail;
-
 
         public LinkedListNormal()
         {

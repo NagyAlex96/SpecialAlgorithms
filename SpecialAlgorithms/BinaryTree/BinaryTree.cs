@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Runtime.InteropServices;
 
 namespace SpecialAlgorithms.BinaryTree
 {
@@ -17,9 +11,9 @@ namespace SpecialAlgorithms.BinaryTree
         {
             this._root = null;
         }
-
+        
         //TODO: bejárások megírása a következő delegatek-re is. Csak TContent és csak TKey
-
+        //TODO: exceptions
 
         public delegate void TraversalDelegate(TContent content, TKey key);
 
@@ -64,7 +58,6 @@ namespace SpecialAlgorithms.BinaryTree
                 traversal(p->Content, p->Key);
             }
         }
-
 
         public void Insert(TContent content, TKey key)
         {
@@ -128,9 +121,11 @@ namespace SpecialAlgorithms.BinaryTree
             }
         }
 
-        public void DeleteContent(TKey kulcs)
+        public void DeleteContent(TKey key)
         {
-            DeleteAssistant(ref this._root, kulcs);
+            if (key is null)
+                throw new ArgumentNullException($"{nameof(key)} cannot be null!");
+            DeleteAssistant(ref this._root, key);
         }
         private void DeleteAssistant(ref TreeItem* parent, TKey key)
         {
@@ -165,7 +160,7 @@ namespace SpecialAlgorithms.BinaryTree
             }
             else
             {
-                throw new Exception("This key doesn't exists in this tree!");
+                throw new InvalidOperationException("This key doesn't exists in this tree!");
             }
         }
         private void DeleteBothChild(TreeItem* e, ref TreeItem* r)
@@ -220,12 +215,6 @@ namespace SpecialAlgorithms.BinaryTree
                 this.LeftChild = null;
                 this.RightChild = null;
             }
-
-            public TreeItem()
-            {
-
-            }
-
         }
     }
 }
