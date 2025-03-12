@@ -1,99 +1,111 @@
 ﻿using SpecialAlgorithms.Pathfinding._2D.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace SpecialAlgorithms.Pathfinding._2D
 {
-    public struct GridMap
+    public struct GridMap : IGridMap
     {
-        private bool[,] _tileCollection;
+        const int CLUSTER_SIZE = 8;
 
-        public GridMap()
+        public ICluster[,] GridMapCollection { get; private set; }
+
+        public GridMap(ITile[,] tiles)
         {
-
+            this.GridMapCollection = new ICluster[SetArraySize(tiles.GetLength(0)), SetArraySize(tiles.GetLength(1))];
+            DivideGridMapToClusters(tiles);
         }
 
-        public GridMap(int size)
+        public int XLength => this.GridMapCollection.GetLength(1);
+
+        public int YLength => this.GridMapCollection.GetLength(0);
+
+        public ITile[,] GetGridCoordinate(int xCoordinate, int yCoordinate)
         {
-            this._tileCollection = new bool[size, size];
+            throw new NotImplementedException();
+            //if (xCoordinate < 0 || xCoordinate >= this.XLength)
+            //{
+            //    throw new InvalidOperationException("One of the X coordinate is out of the bounds!");
+            //}
+            //else if (yCoordinate < 0 || yCoordinate >= this.YLength)
+            //{
+            //    throw new InvalidOperationException("One of the Y coordinate is out of the bounds!");
+            //}
+            //else
+            //{
+            //    return this.GridMapCollection[yCoordinate, xCoordinate].ClusterCollection;
+            //}
         }
 
-        public GridMap(int xLength, int yLength)
+        public void SetGridCoordinate(int xCoordinate, int yCoordinate, ITile[,] state)
         {
-            this._tileCollection = new bool[yLength, xLength];
+            throw new NotImplementedException();
+
+            //if (xCoordinate < 0 || xCoordinate >= this.XLength)
+            //{
+            //    throw new InvalidOperationException("One of the X coordinate is out of the bounds!");
+            //}
+            //else if (yCoordinate < 0 || yCoordinate >= this.YLength)
+            //{
+            //    throw new InvalidOperationException("One of the Y coordinate is out of the bounds!");
+            //}
+            //else
+            //{
+            //    this.GridMapCollection[yCoordinate, xCoordinate].SetCluster(state);
+            //}
         }
 
-        public int YLength => this._tileCollection.GetLength(0);
-        public int XLength => this._tileCollection.GetLength(1);
-
-        public void CreateGrid(int size)
+        private void DivideGridMapToClusters(in ITile[,] tileMap)
         {
-            this._tileCollection = new bool[size, size];
-        }
+            int gridX = 0, gridY = 0;
+            int clusterX = 0, clusterY = 0;
 
-        public void CreateGrid(int xLength, int yLength)
-        {
-            this._tileCollection = new bool[yLength, xLength];
-        }
-
-        public bool GetGridCoordinate(int xCoordinate, int yCoordinate)
-        {
-            if (IsOutOfBounds(xCoordinate, yCoordinate))
+            while (gridY < tileMap.GetLength(0))
             {
-                throw new InvalidOperationException("One of the coordinates is out of the bounds!");
+                while (gridX < tileMap.GetLength(1))
+                {
+                    var clusterGrid = new Cluster(
+                        SetClusterSize(gridX, tileMap.GetLength(1)),
+                        SetClusterSize(gridY, tileMap.GetLength(1))
+                    );
+
+                    for (int y = 0; y < clusterGrid.YSize; y++)
+                        for (int x = 0; x < clusterGrid.XSize; x++)
+                            clusterGrid.ClusterCollection[y, x] = tileMap[gridY + y, gridX + x];
+
+                    this.GridMapCollection[clusterY, clusterX] = clusterGrid;
+                    gridX += clusterGrid.XSize;
+                    clusterX++;
+                }
+
+                gridX = 0;
+                gridY += SetClusterSize(gridY, tileMap.GetLength(0));
+                clusterX = 0;
+                clusterY++;
+            }
+        }
+
+        private int SetClusterSize(in int fromCoordinate, in int toCoordinate)
+        {
+            int xSize = toCoordinate - fromCoordinate;
+            if (xSize % CLUSTER_SIZE == 0)
+            {
+                return CLUSTER_SIZE;
+            }
+            else if (xSize < CLUSTER_SIZE || (xSize > CLUSTER_SIZE && xSize <= CLUSTER_SIZE + CLUSTER_SIZE / 2))
+            {
+                return xSize;
             }
             else
             {
-                return this._tileCollection[yCoordinate, xCoordinate];
+                return CLUSTER_SIZE;
             }
         }
 
-        public void SetGridCoordinate(int xCoordinate, int yCoordinate, bool state)
+        private int SetArraySize(in int Size)
         {
-            if (IsOutOfBounds(xCoordinate, yCoordinate))
-            {
-                throw new InvalidOperationException("One of the coordinates is out of the bounds!"); //TODO: konkrétan meghatározni, hogy melyik koordináta nem jó (x vagy y)
-            }
-            else
-            {
-                this._tileCollection[yCoordinate, xCoordinate] = state;
-            }
-        }
+            int divX = Size / CLUSTER_SIZE;
+            int modX = Size % CLUSTER_SIZE;
 
-        public void Clear()
-        {
-            this._tileCollection = new bool[this.YLength, this.XLength]; ;
-        }
-
-        /// <summary>
-        /// Az adott koordináta a hátáron kívülre mutat
-        /// </summary>
-        /// <param name="xCoordinate">Oszlopszám</param>
-        /// <param name="yCoordinate">Sorszám</param>
-        /// <returns></returns>
-        /// <exception cref="InvalidOperationException"></exception>
-        private bool IsOutOfBounds(int xCoordinate, int yCoordinate)
-        {
-            if (xCoordinate < 0 || xCoordinate >= this.XLength)
-            {
-                return true;
-            }
-            else if (yCoordinate < 0 || yCoordinate >= this.YLength)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
-        }
-
-        public bool AllTrue()
-        {
-            return this._tileCollection.Cast<bool>().All(x => x);
+            return divX + (Size >= CLUSTER_SIZE && modX % CLUSTER_SIZE <= CLUSTER_SIZE / 2 ? 0 : 1);
         }
     }
 }
