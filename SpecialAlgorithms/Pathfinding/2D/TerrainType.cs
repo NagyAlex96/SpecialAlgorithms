@@ -1,6 +1,6 @@
 ﻿namespace SpecialAlgorithms.Pathfinding._2D
 {
-    public enum TerrainType
+    public enum TerrainType : byte
     {
         Ground, Water
     }
